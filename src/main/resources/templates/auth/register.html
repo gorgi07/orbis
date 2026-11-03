@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f7fb">
+  <meta name="orbis-auth-page" content="custom-register-v1">
+  <title>Регистрация — Orbis</title>
+  <link rel="icon" type="image/svg+xml" th:href="@{/icons/favicon.svg}">
+  <link rel="stylesheet" th:href="@{/css/app.css}">
+  <link rel="stylesheet" th:href="@{/css/auth.css}">
+  <script defer th:src="@{/js/auth.js}"></script>
+</head>
+<body class="auth-page">
+  <div class="auth-layout">
+    <aside class="auth-aside">
+      <a class="brand brand-light" th:href="@{/login}" aria-label="Orbis"><span class="brand-icon" aria-hidden="true"><span></span><span></span><span></span><span></span></span><span>orbis<span class="brand-dot">.</span></span></a>
+      <div class="auth-aside-content">
+        <div class="auth-preview" aria-hidden="true">
+          <div class="preview-top"><span class="preview-dot"></span><span class="preview-line short"></span><span class="preview-line"></span></div>
+          <div class="preview-title"></div>
+          <div class="preview-search"></div>
+          <div class="preview-row"><span class="preview-avatar a"></span><span class="preview-line"></span><span class="preview-pill"></span></div>
+          <div class="preview-row"><span class="preview-avatar b"></span><span class="preview-line short"></span><span class="preview-pill"></span></div>
+          <div class="preview-row"><span class="preview-avatar c"></span><span class="preview-line"></span><span class="preview-pill"></span></div>
+        </div>
+        <h2>Ваше рабочее<br>пространство.</h2>
+        <p>Создавайте записи, находите нужную информацию и работайте вместе с командой.</p>
+      </div>
+    </aside>
+    <div class="auth-content">
+      <main class="auth-card">
+        <a class="brand auth-brand-mobile" th:href="@{/login}"><span class="brand-icon" aria-hidden="true"><span></span><span></span><span></span><span></span></span><span>orbis<span class="brand-dot">.</span></span></a>
+        <span class="eyebrow">Начало работы</span>
+        <h1>Создать аккаунт</h1>
+        <p class="auth-subtitle">Придумайте логин и пароль — больше ничего не требуется.</p>
+        <form method="post" th:action="@{/register}" th:object="${registrationForm}">
+          <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+          <div class="auth-alert error" role="alert" th:if="${#fields.hasGlobalErrors()}"><p th:each="e : ${#fields.globalErrors()}" th:text="${e}"></p></div>
+          <div class="form-field"><label for="username">Логин</label><input id="username" th:field="*{username}" type="text" placeholder="Придумайте логин" required minlength="3" maxlength="40" autocomplete="username" autofocus><p class="field-hint">От 3 до 40 символов: буквы, цифры, точка, дефис или _.</p><p class="auth-error" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></p></div>
+          <div class="form-field"><label for="password">Пароль</label><div class="password-field"><input id="password" name="password" type="password" placeholder="Не менее 8 символов" required minlength="8" autocomplete="new-password"><button class="password-toggle" type="button" data-toggle-password="password" aria-label="Показать пароль">Показать</button></div><p class="auth-error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></p></div>
+          <div class="form-field"><label for="confirmPassword">Повторите пароль</label><div class="password-field"><input id="confirmPassword" name="confirmPassword" type="password" placeholder="Введите пароль ещё раз" required autocomplete="new-password"><button class="password-toggle" type="button" data-toggle-password="confirmPassword" aria-label="Показать пароль">Показать</button></div><p class="auth-error" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></p></div>
+          <button class="btn btn-primary auth-submit" type="submit">Создать аккаунт</button>
+        </form>
+        <p class="auth-switch">Уже зарегистрированы? <a th:href="@{/login}">Войти</a></p>
+      </main>
+      <footer class="auth-footer">© 2026. Все права принадлежат Величайшему.</footer>
+    </div>
+  </div>
+</body>
+</html>

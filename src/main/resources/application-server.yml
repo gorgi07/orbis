@@ -1,0 +1,7 @@
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://pg:5432/studs}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+# Регистрация открыта на /register; учётные записи хранятся в PostgreSQL.
+# Тестовые пользователи автоматически НЕ создаются в профиле server.

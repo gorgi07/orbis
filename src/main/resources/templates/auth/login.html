@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f7fb">
+  <meta name="orbis-auth-page" content="custom-login-v1">
+  <title>Вход — Orbis</title>
+  <link rel="icon" type="image/svg+xml" th:href="@{/icons/favicon.svg}">
+  <link rel="stylesheet" th:href="@{/css/app.css}">
+  <link rel="stylesheet" th:href="@{/css/auth.css}">
+  <script defer th:src="@{/js/auth.js}"></script>
+</head>
+<body class="auth-page">
+  <div class="auth-layout">
+    <aside class="auth-aside">
+      <a class="brand brand-light" th:href="@{/login}" aria-label="Orbis"><span class="brand-icon" aria-hidden="true"><span></span><span></span><span></span><span></span></span><span>orbis<span class="brand-dot">.</span></span></a>
+      <div class="auth-aside-content">
+        <div class="auth-preview" aria-hidden="true">
+          <div class="preview-top"><span class="preview-dot"></span><span class="preview-line short"></span><span class="preview-line"></span></div>
+          <div class="preview-title"></div>
+          <div class="preview-search"></div>
+          <div class="preview-row"><span class="preview-avatar a"></span><span class="preview-line"></span><span class="preview-pill"></span></div>
+          <div class="preview-row"><span class="preview-avatar b"></span><span class="preview-line short"></span><span class="preview-pill"></span></div>
+          <div class="preview-row"><span class="preview-avatar c"></span><span class="preview-line"></span><span class="preview-pill"></span></div>
+        </div>
+        <h2>Вся информация<br>в одном месте.</h2>
+        <p>Управляйте людьми, локациями и историей изменений в едином пространстве.</p>
+      </div>
+    </aside>
+    <div class="auth-content">
+      <main class="auth-card">
+        <a class="brand auth-brand-mobile" th:href="@{/login}"><span class="brand-icon" aria-hidden="true"><span></span><span></span><span></span><span></span></span><span>orbis<span class="brand-dot">.</span></span></a>
+        <span class="eyebrow">С возвращением</span>
+        <h1>Вход в Orbis</h1>
+        <p class="auth-subtitle">Введите логин и пароль для продолжения.</p>
+        <div class="auth-alert success" role="status" th:if="${param.registered}">Аккаунт создан. Теперь вы можете войти.</div>
+        <div class="auth-alert success" role="status" th:if="${param.logout}">Вы вышли из аккаунта.</div>
+        <div class="auth-alert error" role="alert" th:if="${param.error}">Неверный логин или пароль. Попробуйте ещё раз.</div>
+        <form method="post" th:action="@{/login}">
+          <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+          <div class="form-field"><label for="username">Логин</label><input id="username" name="username" type="text" placeholder="Введите логин" required maxlength="40" autocomplete="username" autofocus></div>
+          <div class="form-field"><label for="password">Пароль</label><div class="password-field"><input id="password" name="password" type="password" placeholder="Введите пароль" required autocomplete="current-password"><button class="password-toggle" type="button" data-toggle-password="password" aria-label="Показать пароль">Показать</button></div></div>
+          <button class="btn btn-primary auth-submit" type="submit">Войти</button>
+        </form>
+        <p class="auth-switch">Ещё нет аккаунта? <a th:href="@{/register}">Зарегистрироваться</a></p>
+      </main>
+      <footer class="auth-footer">© 2026. Все права принадлежат Величайшему.</footer>
+    </div>
+  </div>
+</body>
+</html>

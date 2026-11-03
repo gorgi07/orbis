@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f7fb">
+  <meta name="_csrf" th:content="${_csrf.token}">
+  <meta name="_csrf_header" th:content="${_csrf.headerName}">
+  <title>Orbis — Люди и локации</title>
+  <link rel="icon" type="image/svg+xml" th:href="@{/icons/favicon.svg}">
+  <link rel="stylesheet" th:href="@{/css/app.css}">
+  <script defer th:src="@{/js/app.js}"></script>
+</head>
+<body class="app-page">
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" th:href="@{/people}" aria-label="Orbis — на главную">
+        <span class="brand-icon" aria-hidden="true"><span></span><span></span><span></span><span></span></span>
+        <span>orbis<span class="brand-dot">.</span></span>
+      </a>
+      <nav class="main-nav" aria-label="Основная навигация">
+        <a th:href="@{/people}" th:classappend="${mode == 'list' || mode == 'detail' || mode == 'new'} ? 'active' : ''" th:attr="aria-current=${mode == 'list' || mode == 'detail' || mode == 'new'} ? 'page' : null">Люди</a>
+        <a th:href="@{/locations}" th:classappend="${mode == 'locations' || mode == 'location-detail'} ? 'active' : ''" th:attr="aria-current=${mode == 'locations' || mode == 'location-detail'} ? 'page' : null">Локации</a>
+        <a th:href="@{/operations}" th:classappend="${mode == 'operations'} ? 'active' : ''" th:attr="aria-current=${mode == 'operations'} ? 'page' : null">Инструменты</a>
+        <a th:href="@{/audit}" th:classappend="${mode == 'audit'} ? 'active' : ''" th:attr="aria-current=${mode == 'audit'} ? 'page' : null">История</a>
+      </nav>
+      <div class="account-area">
+        <span class="account-name" th:text="${currentUser}">Пользователь</span>
+        <form method="post" th:action="@{/logout}">
+          <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+          <button class="btn btn-quiet btn-small" type="submit" title="Выйти из аккаунта">Выйти</button>
+        </form>
+      </div>
+    </div>
+  </header>
+
+  <main id="app" class="container" th:attr="data-mode=${mode},data-id=${entityId}" aria-live="polite" aria-busy="true">
+    <div class="loading-state"><div class="spinner"></div> Загрузка данных…</div>
+  </main>
+
+  <dialog id="edit-dialog" class="modal" aria-label="Редактирование"><div id="modal-content"></div></dialog>
+  <dialog id="confirm-dialog" class="confirm-modal" aria-labelledby="confirm-heading">
+    <div class="confirm-head"><span class="confirm-symbol" aria-hidden="true">!</span><h2 id="confirm-heading">Подтвердите действие</h2></div>
+    <p id="confirm-description"></p>
+    <div class="form-actions"><button class="btn btn-secondary" id="confirm-cancel" type="button">Отмена</button><button class="btn btn-danger" id="confirm-accept" type="button">Удалить</button></div>
+  </dialog>
+  <div id="toasts" role="status" aria-live="polite" aria-atomic="false"></div>
+
+  <footer class="site-footer">© 2026. Все права принадлежат Величайшему.</footer>
+</body>
+</html>

@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Страница не найдена — Orbis</title>
+  <link rel="icon" type="image/svg+xml" th:href="@{/icons/favicon.svg}">
+  <style>
+    :root { color-scheme: light; font-family: Inter, system-ui, -apple-system, 'Segoe UI', sans-serif; }
+    body { background:#f5f7fb; color:#1e293b; min-height:100vh; margin:0; display:flex; flex-direction:column; }
+    header { padding:24px max(24px,calc((100vw - 1060px)/2)); color:#304d9e; font-size:24px; font-weight:750; }
+    main { flex:1; display:grid; place-items:center; padding:24px; }
+    article { width:min(100%,520px); box-sizing:border-box; border:1px solid #dde5f1; background:white; box-shadow:0 12px 36px #14285512; border-radius:18px; padding:38px; }
+    .code { font-size:15px; color:#315de1; font-weight:700; margin-bottom:12px; }
+    h1 { font-size:28px; margin:0 0 12px; }
+    p { color:#5b6880; line-height:1.6; margin:0 0 24px; }
+    a { display:inline-block; padding:12px 18px; background:#315de1; border-radius:10px; color:white; font-weight:600; text-decoration:none; }
+    footer { text-align:center; color:#7a8798; padding:24px; font-size:13px; }
+  </style>
+</head>
+<body>
+  <header>orbis.</header>
+  <main>
+    <article>
+      <div class="code">Ошибка 404</div>
+      <h1>Страница не найдена</h1>
+      <p><span th:if="${errorMessage == null}">Возможно, адрес изменился или запись была удалена.</span><span th:if="${errorMessage != null}" th:text="${errorMessage}">Запись не найдена</span> Вернитесь к списку и продолжите работу.</p>
+      <a th:href="${returnUrl != null ? returnUrl : '/people'}" th:text="${returnLabel != null ? returnLabel : 'Вернуться к людям'}">Вернуться к людям</a>
+    </article>
+  </main>
+  <footer>© 2026. Все права принадлежат Величайшему.</footer>
+</body>
+</html>

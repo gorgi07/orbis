@@ -1,0 +1,7 @@
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/person_lab}
+    username: ${DB_USER:person_lab}
+    password: ${DB_PASSWORD:local_password}
+# Только в профиле local создаются два демо-пользователя alice и bob.
+# Другие пользователи регистрируются через /register и сохраняются в PostgreSQL.

@@ -1,0 +1,37 @@
+spring:
+  application:
+    name: orbis
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        default_schema: ${DB_SCHEMA:public}
+        jdbc:
+          time_zone: UTC
+  flyway:
+    enabled: true
+    default-schema: ${DB_SCHEMA:public}
+    schemas: ${DB_SCHEMA:public}
+    table: person_lab_schema_history
+    create-schemas: false
+  thymeleaf:
+    cache: false
+server:
+  port: ${PORT:8080}
+  address: ${BIND_ADDRESS:127.0.0.1}
+  forward-headers-strategy: framework
+  servlet:
+    session:
+      cookie:
+        http-only: true
+        same-site: lax
+logging:
+  level:
+    root: INFO
+    ru.itmo.personlab: INFO
