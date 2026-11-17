@@ -1,0 +1,48 @@
+@startdot
+digraph G {
+  graph [rankdir=LR, labelloc=t, labeljust=c, label="Orbis  |  UML-диаграмма пакетов", fontname="DejaVu Sans", fontsize=27, fontcolor="#14243D", bgcolor="white", pad="0.36", nodesep="0.98", ranksep="1.25", splines=polyline, outputorder=edgesfirst, compound=true];
+  node [shape=tab, fontname="DejaVu Sans", fontsize=22, style="filled,rounded", color="#7B91B2", penwidth=1.65, fillcolor="#F2F6FD", fontcolor="#12273F", margin="0.34,0.23", width=2.65, height=0.93];
+  edge [style=dashed, color="#8092A9", penwidth=1.6, arrowsize=0.85];
+  subgraph cluster_root {
+    label="ru.itmo.orb";
+    labeljust=l;
+    labelloc=t;
+    fontsize=23;
+    fontname="DejaVu Sans";
+    fontcolor="#334B67";
+    style="rounded,filled";
+    color="#AFC0D7";
+    fillcolor="#FAFCFF";
+    penwidth=1.5;
+
+    web [label="web", fillcolor="#E4F0FF"];
+    config [label="config", fillcolor="#F0EAFF"];
+    realtime [label="realtime", fillcolor="#F0EAFF"];
+    service [label="service", fillcolor="#E3F5EB"];
+    repository [label="repository", fillcolor="#FFF1DB"];
+    api [label="api", fillcolor="#FCEEDB"];
+    model [label="model", fillcolor="#FFE7E6"];
+
+    {rank=same; config; web; realtime;}
+    {rank=same; service;}
+    {rank=same; repository; api;}
+    {rank=same; model;}
+
+    config -> web [style=invis, weight=30];
+    web -> realtime [style=invis, weight=30];
+    repository -> api [style=invis, weight=30];
+
+    web -> service [weight=10];
+    web -> api [weight=2];
+    web -> model [weight=1];
+    config -> service [weight=2];
+    config -> repository [weight=2];
+    realtime -> service [weight=2];
+    service -> repository [weight=10];
+    service -> api [weight=5];
+    service -> model [weight=3];
+    repository -> model [weight=10];
+    api -> model [weight=10];
+  }
+}
+@enddot

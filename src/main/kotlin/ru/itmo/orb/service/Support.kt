@@ -18,16 +18,26 @@ class AuditService(private val auditRepository: AuditRepository) {
     private val log = LoggerFactory.getLogger(javaClass)
     fun record(entity: String, id: Any?, action: String, details: String) {
         val actor = currentActor()
-        auditRepository.save(AuditEvent(actor = actor, entityKind = entity, entityId = id?.toString(), action = action, details = details))
+        auditRepository.save(
+            AuditEvent(
+                actor = actor,
+                entityKind = entity,
+                entityId = id?.toString(),
+                action = action,
+                details = details
+            )
+        )
         log.info("actor={} entity={} id={} action={}", actor, entity, id, action)
     }
+
     @org.springframework.transaction.annotation.Transactional(readOnly = true)
     fun recent() = auditRepository.findAllByOrderByIdDesc(PageRequest.of(0, 60)).content
 }
 
 @Service
 class ChangePublisher(private val publisher: ApplicationEventPublisher) {
-    fun changed(entity: String, id: Any?, action: String) = publisher.publishEvent(DataChanged(entity, id.toString(), action))
+    fun changed(entity: String, id: Any?, action: String) =
+        publisher.publishEvent(DataChanged(entity, id.toString(), action))
 }
 
 @Service
@@ -43,7 +53,15 @@ class IdempotencyService(private val repository: IdempotencyRepository) {
             return previous.resultId to true
         }
         val result = work()
-        repository.saveAndFlush(IdempotencyRecord(actor = actor, requestKey = key, operation = operation, fingerprint = fingerprint, resultId = result))
+        repository.saveAndFlush(
+            IdempotencyRecord(
+                actor = actor,
+                requestKey = key,
+                operation = operation,
+                fingerprint = fingerprint,
+                resultId = result
+            )
+        )
         return result to false
     }
 }

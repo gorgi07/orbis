@@ -19,6 +19,7 @@ class LocationService(
         if (!input.y.isFinite()) throw InvalidInput("Координата Y должна быть конечным числом")
         if (input.name != null && input.name.isBlank()) throw InvalidInput("Название не может быть пустым; оставьте null")
     }
+
     private fun find(id: Long): Location = locations.findById(id).orElseThrow { NotFound("Локация #$id не найдена") }
 
     @Transactional(readOnly = true)

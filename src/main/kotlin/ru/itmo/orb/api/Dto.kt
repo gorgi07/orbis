@@ -17,12 +17,14 @@ data class PersonInput(
     val nationality: Country?,
     val version: Long? = null
 )
+
 data class LocationInput(
     val x: Long,
     val y: Float,
     @field:Size(max = 200) val name: String?,
     val version: Long? = null
 )
+
 data class LocationResponse(val id: Long, val x: Long, val y: Float, val name: String?, val version: Long)
 data class PersonResponse(
     val id: Int, val name: String,
@@ -31,6 +33,7 @@ data class PersonResponse(
     val location: LocationResponse?, val height: Double, val weight: Double,
     val nationality: Country?, val version: Long
 )
+
 data class IdentifierResponse(val id: Int?, val replayed: Boolean = false)
 data class CountResponse(val count: Long)
 data class ErrorResponse(val error: String)
