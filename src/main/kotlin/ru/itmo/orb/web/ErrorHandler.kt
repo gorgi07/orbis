@@ -16,17 +16,31 @@ import ru.itmo.orb.service.*
 @RestControllerAdvice(assignableTypes = [PersonApi::class, LocationApi::class, OperationsApi::class, AuditApi::class])
 class ErrorHandler {
     @ExceptionHandler(NotFound::class)
-    fun notFound(e: NotFound) = ResponseEntity.status(HttpStatus.NOT_FOUND).body(ErrorResponse(e.message ?: "Не найдено"))
+    fun notFound(e: NotFound) =
+        ResponseEntity.status(HttpStatus.NOT_FOUND).body(ErrorResponse(e.message ?: "Не найдено"))
+
     @ExceptionHandler(Conflict::class, ObjectOptimisticLockingFailureException::class)
-    fun conflict(e: Exception) = ResponseEntity.status(HttpStatus.CONFLICT).body(ErrorResponse(e.message ?: "Конфликт изменений"))
+    fun conflict(e: Exception) =
+        ResponseEntity.status(HttpStatus.CONFLICT).body(ErrorResponse(e.message ?: "Конфликт изменений"))
+
     @ExceptionHandler(InvalidInput::class)
     fun invalid(e: InvalidInput) = ResponseEntity.badRequest().body(ErrorResponse(e.message ?: "Неверные данные"))
+
     @ExceptionHandler(MethodArgumentNotValidException::class)
-    fun validation(e: MethodArgumentNotValidException) = ResponseEntity.badRequest().body(ErrorResponse(
+    fun validation(e: MethodArgumentNotValidException) = ResponseEntity.badRequest().body(
+        ErrorResponse(
         e.bindingResult.fieldErrors.joinToString("; ") { "${it.field}: ${it.defaultMessage}" }
     ))
-    @ExceptionHandler(HttpMessageNotReadableException::class, MethodArgumentTypeMismatchException::class, MissingRequestHeaderException::class)
-    fun malformed(e: Exception) = ResponseEntity.badRequest().body(ErrorResponse("Некорректный запрос: ${e.message?.take(120)}"))
+
+    @ExceptionHandler(
+        HttpMessageNotReadableException::class,
+        MethodArgumentTypeMismatchException::class,
+        MissingRequestHeaderException::class
+    )
+    fun malformed(e: Exception) =
+        ResponseEntity.badRequest().body(ErrorResponse("Некорректный запрос: ${e.message?.take(120)}"))
+
     @ExceptionHandler(DataIntegrityViolationException::class)
-    fun constraint(e: DataIntegrityViolationException) = ResponseEntity.status(HttpStatus.CONFLICT).body(ErrorResponse("Ограничение базы данных нарушено или ключ используется конкурентным запросом"))
+    fun constraint(e: DataIntegrityViolationException) = ResponseEntity.status(HttpStatus.CONFLICT)
+        .body(ErrorResponse("Ограничение базы данных нарушено или ключ используется конкурентным запросом"))
 }

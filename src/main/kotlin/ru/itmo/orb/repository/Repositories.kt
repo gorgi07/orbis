@@ -15,10 +15,12 @@ interface PersonRepository : JpaRepository<Person, Int>, JpaSpecificationExecuto
     fun countByHairColor(color: Color): Long
     fun countByEyeColor(color: Color): Long
 }
+
 interface LocationRepository : JpaRepository<Location, Long>
 interface AuditRepository : JpaRepository<AuditEvent, Long> {
     fun findAllByOrderByIdDesc(pageable: Pageable): Page<AuditEvent>
 }
+
 interface IdempotencyRepository : JpaRepository<IdempotencyRecord, Long> {
     fun findByActorAndRequestKey(actor: String, requestKey: String): IdempotencyRecord?
 }

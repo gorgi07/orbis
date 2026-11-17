@@ -29,8 +29,10 @@ class PersonService(
     )
 
     @Transactional(readOnly = true)
-    fun list(page: Int, size: Int, sortBy: String, direction: String,
-             name: String?, eyeColor: Color?, hairColor: Color?, nationality: Country?, locationName: String?): Page<PersonResponse> {
+    fun list(
+        page: Int, size: Int, sortBy: String, direction: String,
+        name: String?, eyeColor: Color?, hairColor: Color?, nationality: Country?, locationName: String?
+    ): Page<PersonResponse> {
         if (size !in 1..100 || page < 0) throw InvalidInput("Некорректные параметры страницы")
         val property = sortFields[sortBy] ?: throw InvalidInput("Недопустимое поле сортировки")
         val sortDirection = when (direction.lowercase()) {

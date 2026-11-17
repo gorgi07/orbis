@@ -20,11 +20,19 @@ class EventWebSocket : TextWebSocketHandler() {
     private val log = LoggerFactory.getLogger(javaClass)
     private val sessions = ConcurrentHashMap.newKeySet<WebSocketSession>()
     override fun afterConnectionEstablished(session: WebSocketSession) {
-        if (session.principal == null) { session.close(CloseStatus.POLICY_VIOLATION); return }
+        if (session.principal == null) {
+            session.close(CloseStatus.POLICY_VIOLATION); return
+        }
         sessions.add(session)
     }
-    override fun afterConnectionClosed(session: WebSocketSession, status: CloseStatus) { sessions.remove(session) }
-    override fun handleTransportError(session: WebSocketSession, exception: Throwable) { sessions.remove(session) }
+
+    override fun afterConnectionClosed(session: WebSocketSession, status: CloseStatus) {
+        sessions.remove(session)
+    }
+
+    override fun handleTransportError(session: WebSocketSession, exception: Throwable) {
+        sessions.remove(session)
+    }
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     fun onDataChanged(event: DataChanged) {
@@ -33,7 +41,9 @@ class EventWebSocket : TextWebSocketHandler() {
         for (session in sessions) {
             try {
                 synchronized(session) { if (session.isOpen) session.sendMessage(TextMessage(message)) }
-            } catch (ex: Exception) { sessions.remove(session); log.warn("WebSocket session disconnected") }
+            } catch (ex: Exception) {
+                sessions.remove(session); log.warn("WebSocket session disconnected")
+            }
         }
     }
 }

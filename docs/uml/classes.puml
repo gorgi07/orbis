@@ -1,0 +1,184 @@
+@startuml
+' One UML class diagram of core Orbis implementation.
+' Source snapshot: orbis-location-routing-refactored.zip; package renamed to ru.itmo.orb in user's version.
+' Auxiliary classes, DTO methods and minor page routes intentionally omitted for readability.
+title Orbis — UML-диаграмма классов приложения
+set namespaceSeparator none
+left to right direction
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam defaultFontName DejaVu Sans
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+skinparam ArrowColor #64748B
+hide empty methods
+
+package "ru.itmo.orb.web" as W {
+  class PersonApi <<REST>>
+  class LocationApi <<REST>>
+  class OperationsApi <<REST>>
+  class AuditApi <<REST>>
+  class PeoplePageController <<MVC>>
+  class LocationPageController <<MVC>>
+  class AuthController <<MVC>>
+}
+package "ru.itmo.orb.service" as S {
+  class PersonService <<Service>> {
+    +list(...): Page<PersonResponse>
+    +get(id: Int): PersonResponse
+    +create(input: PersonInput, key: String): IdentifierResponse
+    +update(id: Int, input: PersonInput): PersonResponse
+    +delete(id: Int): Unit
+  }
+  class LocationService <<Service>> {
+    +all(): List<LocationResponse>
+    +get(id: Long): LocationResponse
+    +linkedPeople(id: Long): List<PersonResponse>
+    +create(input: LocationInput): LocationResponse
+    +update(id: Long, input: LocationInput): LocationResponse
+    +deleteAndReassign(id: Long, replacementId: Long?): Unit
+  }
+  class SpecialOperationsService <<Service>> {
+    +deleteOneByWeight(weight: Double, key: String): IdentifierResponse
+    +maxId(): PersonResponse?
+    +countShorterThan(height: Double): Long
+    +countHairColor(color: Color): Long
+    +countEyeColor(color: Color): Long
+  }
+  class RegistrationService <<Service>> {
+    +register(username: String, password: String, confirmation: String): AppUser
+  }
+  class AuditService <<Service>> {
+    +record(entity: String, id: Any?, action: String, details: String): Unit
+    +recent(): List<AuditEvent>
+  }
+  class IdempotencyService <<Service>> {
+    +execute(key: String, operation: String, fingerprint: String, work: () -> Int?): Pair<Int?, Boolean>
+  }
+  class ChangePublisher <<Service>> {
+    +changed(entity: String, id: Any?, action: String): Unit
+  }
+  class DataChanged <<data class>> {
+    +entity: String
+    +id: String
+    +action: String
+  }
+}
+package "ru.itmo.orb.repository" as R {
+  interface PersonRepository <<Spring Data JPA>>
+  interface LocationRepository <<Spring Data JPA>>
+  interface AppUserRepository <<Spring Data JPA>>
+  interface AuditRepository <<Spring Data JPA>>
+  interface IdempotencyRepository <<Spring Data JPA>>
+}
+package "ru.itmo.orb.model" as M {
+  class Person <<Entity>> {
+    +id: Int?
+    +name: String
+    +coordinates: Coordinates
+    +creationDate: ZonedDateTime
+    +eyeColor: Color?
+    +hairColor: Color?
+    +location: Location?
+    +height: Double
+    +weight: Double
+    +nationality: Country?
+    +version: Long
+  }
+  class Coordinates <<Embeddable>> {
+    +x: Int
+    +y: Double
+  }
+  class Location <<Entity>> {
+    +id: Long?
+    +x: Long
+    +y: Float
+    +name: String?
+    +version: Long
+  }
+  enum Color {
+    RED
+    BLUE
+    YELLOW
+  }
+  enum Country {
+    USA
+    INDIA
+    ITALY
+    SOUTH_KOREA
+  }
+  class AppUser <<Entity>> {
+    +id: Long?
+    +username: String
+    +passwordHash: String
+    +createdAt: Instant
+  }
+  class AuditEvent <<Entity>> {
+    +id: Long?
+    +actor: String
+    +entityKind: String
+    +entityId: String?
+    +action: String
+    +details: String
+    +happenedAt: Instant
+  }
+  class IdempotencyRecord <<Entity>> {
+    +id: Long?
+    +actor: String
+    +requestKey: String
+    +operation: String
+    +fingerprint: String
+    +resultId: Int?
+  }
+}
+package "ru.itmo.orb.realtime" as RT {
+  class WebSocketConfig <<Configuration>>
+  class EventWebSocket <<WebSocket handler>> {
+    +onDataChanged(event: DataChanged): Unit
+  }
+}
+
+' Controller-to-service dependencies
+PersonApi ..> PersonService
+PeoplePageController ..> PersonService
+LocationApi ..> LocationService
+LocationPageController ..> LocationService
+OperationsApi ..> SpecialOperationsService
+AuditApi ..> AuditService
+AuthController ..> RegistrationService
+' Core service dependencies on persistence
+PersonService ..> PersonRepository
+PersonService ..> LocationRepository
+LocationService ..> LocationRepository
+LocationService ..> PersonRepository
+SpecialOperationsService ..> PersonRepository
+RegistrationService ..> AppUserRepository
+RegistrationService ..> AuditRepository
+AuditService ..> AuditRepository
+IdempotencyService ..> IdempotencyRepository
+' Cross-cutting collaborators. Stereotypes mark static dependencies, not direct calls.
+PersonService ..> AuditService
+PersonService ..> IdempotencyService
+PersonService ..> ChangePublisher
+LocationService ..> AuditService
+LocationService ..> ChangePublisher
+SpecialOperationsService ..> AuditService
+SpecialOperationsService ..> IdempotencyService
+SpecialOperationsService ..> ChangePublisher
+' Repository entity types
+PersonRepository ..> Person : entity
+LocationRepository ..> Location : entity
+AppUserRepository ..> AppUser : entity
+AuditRepository ..> AuditEvent : entity
+IdempotencyRepository ..> IdempotencyRecord : entity
+' Domain relationships
+Person "1" *-- "1" Coordinates : embedded
+Person "0..*" --> "0..1" Location : location
+Person ..> Color : eyeColor / hairColor
+Person ..> Country : nationality
+' Event handling
+ChangePublisher ..> DataChanged : publishes
+EventWebSocket ..> DataChanged : AFTER_COMMIT listener
+WebSocketConfig ..> EventWebSocket : configures
+@enduml
